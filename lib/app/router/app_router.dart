@@ -4,6 +4,9 @@ import 'package:cajafacil/app/router/routes.dart';
 import 'package:cajafacil/core/widgets/placeholder_screen.dart';
 import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
 import 'package:cajafacil/features/auth/presentation/screens/login_screen.dart';
+import 'package:cajafacil/features/cash_register/presentation/screens/cash_history_screen.dart';
+import 'package:cajafacil/features/cash_register/presentation/screens/cash_register_screen.dart';
+import 'package:cajafacil/features/cash_register/presentation/screens/close_cash_screen.dart';
 import 'package:cajafacil/features/exchange_rate/presentation/screens/exchange_rate_screen.dart';
 import 'package:cajafacil/features/home/presentation/home_screen.dart';
 import 'package:cajafacil/features/products/presentation/screens/product_form_screen.dart';
@@ -48,6 +51,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 Widget _moduleScreen(AppModule module) => switch (module.route) {
   Routes.exchangeRate => const ExchangeRateScreen(),
   Routes.products => const ProductsScreen(),
+  Routes.cashRegister => const CashRegisterScreen(),
   _ => PlaceholderScreen(title: module.title),
 };
 
@@ -63,6 +67,17 @@ List<RouteBase> _moduleSubRoutes(AppModule module) => switch (module.route) {
       path: ':id',
       builder: (context, state) =>
           ProductFormScreen(productId: state.pathParameters['id']),
+    ),
+  ],
+  Routes.cashRegister => [
+    GoRoute(
+      path: 'historial',
+      builder: (context, state) => const CashHistoryScreen(),
+    ),
+    GoRoute(
+      path: 'cerrar/:id',
+      builder: (context, state) =>
+          CloseCashScreen(sessionId: state.pathParameters['id']!),
     ),
   ],
   _ => const [],
