@@ -21,7 +21,8 @@ val releaseStoreFile = signingValue("storeFile", "ANDROID_KEYSTORE_PATH")
 
 android {
     namespace = "cu.tizacoderz.cajafacil"
-    compileSdk = flutter.compileSdkVersion
+    // CameraX 1.6 (mobile_scanner 7.5) exige compileSdk 36 y AGP 8.9.1.
+    compileSdk = 36
     // Varios plugins (sqlite3, mobile_scanner) piden NDK 27.
     ndkVersion = "27.0.12077973"
 
