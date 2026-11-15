@@ -27,6 +27,10 @@ class Products extends Table with SyncColumns {
   /// La unicidad se valida en el repositorio entre productos no borrados.
   TextColumn get barcode => text().nullable()();
   TextColumn get photoPath => text().nullable()();
+
+  /// Foto comprimida (JPEG ~256 px, pocos KB). En Web no hay sistema de
+  /// archivos, por eso se guarda en la BD. Añadida en el esquema v2.
+  BlobColumn get photoData => blob().nullable()();
   TextColumn get unit => textEnum<ProductUnit>()();
   IntColumn get costUsdCents => integer().withDefault(const Constant(0))();
   IntColumn get priceUsdCents => integer()();

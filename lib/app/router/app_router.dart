@@ -6,6 +6,8 @@ import 'package:cajafacil/features/auth/presentation/providers/auth_providers.da
 import 'package:cajafacil/features/auth/presentation/screens/login_screen.dart';
 import 'package:cajafacil/features/exchange_rate/presentation/screens/exchange_rate_screen.dart';
 import 'package:cajafacil/features/home/presentation/home_screen.dart';
+import 'package:cajafacil/features/products/presentation/screens/product_form_screen.dart';
+import 'package:cajafacil/features/products/presentation/screens/products_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -30,6 +32,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         GoRoute(
           path: module.route,
           builder: (context, state) => _moduleScreen(module),
+          routes: _moduleSubRoutes(module),
         ),
     ],
   );
@@ -44,5 +47,23 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 /// Pantalla de cada módulo. Los no implementados muestran un aviso.
 Widget _moduleScreen(AppModule module) => switch (module.route) {
   Routes.exchangeRate => const ExchangeRateScreen(),
+  Routes.products => const ProductsScreen(),
   _ => PlaceholderScreen(title: module.title),
+};
+
+List<RouteBase> _moduleSubRoutes(AppModule module) => switch (module.route) {
+  Routes.products => [
+    GoRoute(
+      path: 'nuevo',
+      builder: (context, state) => ProductFormScreen(
+        initialBarcode: state.uri.queryParameters['codigo'],
+      ),
+    ),
+    GoRoute(
+      path: ':id',
+      builder: (context, state) =>
+          ProductFormScreen(productId: state.pathParameters['id']),
+    ),
+  ],
+  _ => const [],
 };
