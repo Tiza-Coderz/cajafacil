@@ -46,6 +46,9 @@ dependencies:
   riverpod_annotation: ^4.0.0
   sqlite3_flutter_libs: ^0.5.42
   uuid: ^4.6.0
+  mobile_scanner: ^7.5.0
+  image_picker: ^1.2.1
+  image: ^4.13.1
 
 dev_dependencies:
   flutter_test:
