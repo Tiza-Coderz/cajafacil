@@ -4,7 +4,9 @@ import 'package:cajafacil/app/router/routes.dart';
 import 'package:cajafacil/core/widgets/placeholder_screen.dart';
 import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
 import 'package:cajafacil/features/auth/presentation/screens/login_screen.dart';
+import 'package:cajafacil/features/exchange_rate/presentation/screens/exchange_rate_screen.dart';
 import 'package:cajafacil/features/home/presentation/home_screen.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,11 +26,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: Routes.home,
         builder: (context, state) => const HomeScreen(),
       ),
-      // Módulos aún no implementados: se irán reemplazando por feature.
       for (final module in appModules)
         GoRoute(
           path: module.route,
-          builder: (context, state) => PlaceholderScreen(title: module.title),
+          builder: (context, state) => _moduleScreen(module),
         ),
     ],
   );
@@ -39,3 +40,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ..onDispose(router.dispose);
   return router;
 });
+
+/// Pantalla de cada módulo. Los no implementados muestran un aviso.
+Widget _moduleScreen(AppModule module) => switch (module.route) {
+  Routes.exchangeRate => const ExchangeRateScreen(),
+  _ => PlaceholderScreen(title: module.title),
+};
