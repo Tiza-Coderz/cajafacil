@@ -6,7 +6,8 @@ import 'package:cajafacil/core/domain/enums.dart';
 import 'package:cajafacil/core/money/currency.dart';
 import 'package:cajafacil/core/money/money.dart';
 import 'package:cajafacil/core/money/money_formatter.dart';
-import 'package:cajafacil/core/utils/image_compressor.dart';
+import 'package:cajafacil/core/utils/image_compressor.dart'
+    deferred as compressor;
 import 'package:cajafacil/core/utils/qty.dart';
 import 'package:cajafacil/core/widgets/barcode_scanner_screen.dart';
 import 'package:cajafacil/core/widgets/product_avatar.dart';
@@ -218,7 +219,10 @@ class _ProductFormState extends ConsumerState<_ProductForm> {
       imageQuality: 85,
     );
     if (file == null) return;
-    final thumb = ImageCompressor.thumbnail(await file.readAsBytes());
+    await compressor.loadLibrary();
+    final thumb = compressor.ImageCompressor.thumbnail(
+      await file.readAsBytes(),
+    );
     if (!mounted) return;
     if (thumb == null) {
       ScaffoldMessenger.of(context).showSnackBar(
