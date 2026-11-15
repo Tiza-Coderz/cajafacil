@@ -6,6 +6,18 @@ y versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-11-15
+
+### Rendimiento
+
+- Web: reportes, ajustes, generación de PDF y compresión de imágenes se
+  cargan solo al usarlos. El JavaScript inicial baja 22 % (1,45 → 1,13 MB
+  comprimido), unos 10–15 s menos en la primera visita con conexión lenta.
+
+### Corregido
+
+- Ajustes: las opciones de redondeo de CUP ya no se cortan en móviles.
+
 ## [1.0.0] - 2026-11-15
 
 Primera versión completa: el negocio puede vender, cobrar en USD y CUP,
@@ -96,7 +108,8 @@ acceder por usuario con PIN.
   credenciales visibles en el acceso y botón "Restablecer demo".
 - Menú de inicio y rutas protegidas según permisos.
 
-[Unreleased]: https://github.com/Tiza-Coderz/cajafacil/compare/v1.0.0...develop
+[Unreleased]: https://github.com/Tiza-Coderz/cajafacil/compare/v1.0.1...develop
+[1.0.1]: https://github.com/Tiza-Coderz/cajafacil/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/Tiza-Coderz/cajafacil/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/Tiza-Coderz/cajafacil/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Tiza-Coderz/cajafacil/releases/tag/v0.1.0

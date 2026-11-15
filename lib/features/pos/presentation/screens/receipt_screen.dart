@@ -6,13 +6,14 @@ import 'package:cajafacil/core/widgets/state_views.dart';
 import 'package:cajafacil/features/pos/domain/entities/sale_receipt.dart';
 import 'package:cajafacil/features/pos/domain/services/receipt_formatter.dart';
 import 'package:cajafacil/features/pos/presentation/providers/cart_controller.dart';
-import 'package:cajafacil/features/pos/presentation/receipt/receipt_pdf.dart';
+import 'package:cajafacil/features/pos/presentation/receipt/receipt_pdf.dart'
+    deferred as receipt_pdf;
 import 'package:cajafacil/features/settings/domain/business_profile.dart';
 import 'package:cajafacil/features/settings/presentation/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:printing/printing.dart';
+import 'package:printing/printing.dart' deferred as printing;
 
 /// Ticket en pantalla con opciones de PDF/impresión y WhatsApp.
 class ReceiptScreen extends ConsumerWidget {
@@ -130,8 +131,10 @@ class ReceiptScreen extends ConsumerWidget {
     SaleReceipt r,
     ReceiptHeader header,
   ) async {
-    final bytes = await ReceiptPdf.build(r, header);
-    await Printing.layoutPdf(
+    // El generador de PDF se descarga solo cuando se pide (carga diferida).
+    await Future.wait([receipt_pdf.loadLibrary(), printing.loadLibrary()]);
+    final bytes = await receipt_pdf.ReceiptPdf.build(r, header);
+    await printing.Printing.layoutPdf(
       name: 'ticket-${r.number}.pdf',
       onLayout: (_) async => bytes,
     );

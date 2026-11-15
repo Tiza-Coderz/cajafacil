@@ -255,14 +255,14 @@ class _BusinessFormState extends ConsumerState<_BusinessForm> {
               onSelectionChanged: (s) => setState(() => _currency = s.first),
             ),
             const SizedBox(height: Gaps.lg),
-            Text('Redondeo de importes en CUP', style: text.titleSmall),
+            Text('Redondeo de importes en CUP (pesos)', style: text.titleSmall),
             const SizedBox(height: Gaps.sm),
             SegmentedButton<CupRounding>(
               segments: const [
                 ButtonSegment(value: CupRounding.none, label: Text('Exacto')),
-                ButtonSegment(value: CupRounding.one, label: Text('1 peso')),
-                ButtonSegment(value: CupRounding.five, label: Text('5 pesos')),
-                ButtonSegment(value: CupRounding.ten, label: Text('10 pesos')),
+                ButtonSegment(value: CupRounding.one, label: Text('1')),
+                ButtonSegment(value: CupRounding.five, label: Text('5')),
+                ButtonSegment(value: CupRounding.ten, label: Text('10')),
               ],
               selected: {_rounding},
               onSelectionChanged: (s) => setState(() => _rounding = s.first),

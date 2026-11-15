@@ -1,6 +1,7 @@
 import 'package:cajafacil/app/router/app_modules.dart';
 import 'package:cajafacil/app/router/route_guards.dart';
 import 'package:cajafacil/app/router/routes.dart';
+import 'package:cajafacil/core/widgets/deferred_screen.dart';
 import 'package:cajafacil/core/widgets/placeholder_screen.dart';
 import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
 import 'package:cajafacil/features/auth/presentation/screens/login_screen.dart';
@@ -20,8 +21,10 @@ import 'package:cajafacil/features/pos/presentation/screens/receipt_screen.dart'
 import 'package:cajafacil/features/pos/presentation/screens/session_sales_screen.dart';
 import 'package:cajafacil/features/products/presentation/screens/product_form_screen.dart';
 import 'package:cajafacil/features/products/presentation/screens/products_screen.dart';
-import 'package:cajafacil/features/reports/presentation/reports_screen.dart';
-import 'package:cajafacil/features/settings/presentation/settings_screen.dart';
+import 'package:cajafacil/features/reports/presentation/reports_screen.dart'
+    deferred as reports_screen;
+import 'package:cajafacil/features/settings/presentation/settings_screen.dart'
+    deferred as settings_screen;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -79,8 +82,17 @@ Widget _moduleBody(AppModule module) => switch (module.route) {
   Routes.cashRegister => const CashRegisterScreen(),
   Routes.pos => const PosScreen(),
   Routes.inventory => const InventoryScreen(),
-  Routes.reports => const ReportsScreen(),
-  Routes.settings => const SettingsScreen(),
+  // Carga diferida: gráficos, PDF y ajustes no van en el JS inicial.
+  Routes.reports => DeferredScreen(
+    title: module.title,
+    load: reports_screen.loadLibrary,
+    builder: (_) => reports_screen.ReportsScreen(),
+  ),
+  Routes.settings => DeferredScreen(
+    title: module.title,
+    load: settings_screen.loadLibrary,
+    builder: (_) => settings_screen.SettingsScreen(),
+  ),
   _ => PlaceholderScreen(title: module.title),
 };
 
