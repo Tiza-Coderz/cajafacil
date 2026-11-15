@@ -18,6 +18,10 @@ LoginAttemptsTracker loginAttemptsTracker(Ref ref) => LoginAttemptsTracker();
 Stream<List<AppUser>> activeUsers(Ref ref) =>
     ref.watch(authRepositoryProvider).watchActiveUsers();
 
+@riverpod
+Stream<List<AppUser>> allUsers(Ref ref) =>
+    ref.watch(authRepositoryProvider).watchAllUsers();
+
 /// Resultado de un intento de acceso, pensado para mostrar mensajes claros.
 sealed class LoginResult {
   const LoginResult();
