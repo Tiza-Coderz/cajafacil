@@ -1,0 +1,77 @@
+name: Release Android
+
+# Al publicar un tag vX.Y.Z se compilan los APK y se adjuntan a la release.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+env:
+  FLUTTER_VERSION: "3.32.7"
+
+jobs:
+  apk:
+    name: APK de release
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      # Los secrets no se pueden usar en `if`; se exponen como env del job.
+      KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+
+      # Keystore opcional desde secrets; sin él se firma con la clave debug.
+      - name: Preparar keystore
+        if: ${{ env.KEYSTORE_BASE64 != '' }}
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "ANDROID_KEYSTORE_PATH=$RUNNER_TEMP/release.jks" >> "$GITHUB_ENV"
+
+      # APK por arquitectura: ~3 veces más livianos que el universal
+      # (importa con datos móviles caros). También se publica el universal.
+      - name: Compilar APKs
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          flutter build apk --release --split-per-abi --dart-define=DEMO_MODE=true
+          flutter build apk --release --dart-define=DEMO_MODE=true
+          cd build/app/outputs/flutter-apk
+          mv app-arm64-v8a-release.apk   "cajafacil-${GITHUB_REF_NAME}-arm64.apk"
+          mv app-armeabi-v7a-release.apk "cajafacil-${GITHUB_REF_NAME}-armv7.apk"
+          mv app-x86_64-release.apk      "cajafacil-${GITHUB_REF_NAME}-x86_64.apk"
+          mv app-release.apk             "cajafacil-${GITHUB_REF_NAME}-universal.apk"
+          ls -lh *.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apks-${{ github.ref_name }}
+          path: build/app/outputs/flutter-apk/cajafacil-*.apk
+
+      - name: Adjuntar a la release de GitHub
+        if: startsWith(github.ref, 'refs/tags/')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1 \
+            || gh release create "$GITHUB_REF_NAME" --title "CajaFácil $GITHUB_REF_NAME" --notes "Ver CHANGELOG.md"
+          gh release upload "$GITHUB_REF_NAME" build/app/outputs/flutter-apk/cajafacil-*.apk --clobber
