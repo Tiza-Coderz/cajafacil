@@ -54,11 +54,11 @@ class StockLedger {
         movement,
         entityId: movement.id,
       );
-      await _db.writeSynced(
-        _db.products,
-        product.copyWith(stockMilli: balance, updatedAt: now),
-        entityId: productId,
-      );
+      // La caché de existencia se actualiza solo en local: no cambia
+      // `updated_at` ni se encola. Si lo hiciera, una venta en otra caja
+      // "ganaría" por fecha y pisaría, p. ej., un cambio de precio.
+      await (_db.update(_db.products)..where((p) => p.id.equals(productId)))
+          .write(ProductsCompanion(stockMilli: Value(balance)));
       return balance;
     });
   }
