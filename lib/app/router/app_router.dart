@@ -9,6 +9,10 @@ import 'package:cajafacil/features/cash_register/presentation/screens/cash_regis
 import 'package:cajafacil/features/cash_register/presentation/screens/close_cash_screen.dart';
 import 'package:cajafacil/features/exchange_rate/presentation/screens/exchange_rate_screen.dart';
 import 'package:cajafacil/features/home/presentation/home_screen.dart';
+import 'package:cajafacil/features/inventory/presentation/screens/adjustment_screen.dart';
+import 'package:cajafacil/features/inventory/presentation/screens/inventory_screen.dart';
+import 'package:cajafacil/features/inventory/presentation/screens/kardex_screen.dart';
+import 'package:cajafacil/features/inventory/presentation/screens/purchase_form_screen.dart';
 import 'package:cajafacil/features/pos/presentation/screens/checkout_screen.dart';
 import 'package:cajafacil/features/pos/presentation/screens/pos_screen.dart';
 import 'package:cajafacil/features/pos/presentation/screens/receipt_screen.dart';
@@ -57,6 +61,7 @@ Widget _moduleScreen(AppModule module) => switch (module.route) {
   Routes.products => const ProductsScreen(),
   Routes.cashRegister => const CashRegisterScreen(),
   Routes.pos => const PosScreen(),
+  Routes.inventory => const InventoryScreen(),
   _ => PlaceholderScreen(title: module.title),
 };
 
@@ -72,6 +77,21 @@ List<RouteBase> _moduleSubRoutes(AppModule module) => switch (module.route) {
       path: ':id',
       builder: (context, state) =>
           ProductFormScreen(productId: state.pathParameters['id']),
+    ),
+  ],
+  Routes.inventory => [
+    GoRoute(
+      path: 'entrada',
+      builder: (context, state) => const PurchaseFormScreen(),
+    ),
+    GoRoute(
+      path: 'ajuste',
+      builder: (context, state) => const AdjustmentScreen(),
+    ),
+    GoRoute(
+      path: 'kardex/:id',
+      builder: (context, state) =>
+          KardexScreen(productId: state.pathParameters['id']!),
     ),
   ],
   Routes.pos => [
