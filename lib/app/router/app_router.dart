@@ -7,6 +7,7 @@ import 'package:cajafacil/features/auth/presentation/screens/login_screen.dart';
 import 'package:cajafacil/features/cash_register/presentation/screens/cash_history_screen.dart';
 import 'package:cajafacil/features/cash_register/presentation/screens/cash_register_screen.dart';
 import 'package:cajafacil/features/cash_register/presentation/screens/close_cash_screen.dart';
+import 'package:cajafacil/features/demo/presentation/demo_history_gate.dart';
 import 'package:cajafacil/features/exchange_rate/presentation/screens/exchange_rate_screen.dart';
 import 'package:cajafacil/features/home/presentation/home_screen.dart';
 import 'package:cajafacil/features/inventory/presentation/screens/adjustment_screen.dart';
@@ -19,6 +20,7 @@ import 'package:cajafacil/features/pos/presentation/screens/receipt_screen.dart'
 import 'package:cajafacil/features/pos/presentation/screens/session_sales_screen.dart';
 import 'package:cajafacil/features/products/presentation/screens/product_form_screen.dart';
 import 'package:cajafacil/features/products/presentation/screens/products_screen.dart';
+import 'package:cajafacil/features/reports/presentation/reports_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -56,12 +58,27 @@ final appRouterProvider = Provider<GoRouter>((ref) {
 });
 
 /// Pantalla de cada módulo. Los no implementados muestran un aviso.
-Widget _moduleScreen(AppModule module) => switch (module.route) {
+Widget _moduleScreen(AppModule module) {
+  final screen = _moduleBody(module);
+  // Estos módulos dependen del historial de ventas de ejemplo.
+  const gated = {
+    Routes.pos,
+    Routes.cashRegister,
+    Routes.inventory,
+    Routes.reports,
+  };
+  return gated.contains(module.route)
+      ? DemoHistoryGate(title: module.title, child: screen)
+      : screen;
+}
+
+Widget _moduleBody(AppModule module) => switch (module.route) {
   Routes.exchangeRate => const ExchangeRateScreen(),
   Routes.products => const ProductsScreen(),
   Routes.cashRegister => const CashRegisterScreen(),
   Routes.pos => const PosScreen(),
   Routes.inventory => const InventoryScreen(),
+  Routes.reports => const ReportsScreen(),
   _ => PlaceholderScreen(title: module.title),
 };
 
