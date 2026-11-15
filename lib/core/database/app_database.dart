@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:cajafacil/core/database/connection.dart';
@@ -51,8 +52,9 @@ class AppDatabase extends _$AppDatabase {
   /// Historial de esquema:
   /// - v1 (0.1.0): esquema inicial.
   /// - v2: `products.photo_data` para fotos en Web.
+  /// - v3: precios en CUP congelados por línea de venta.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +62,10 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       if (from < 2) {
         await m.addColumn(products, products.photoData);
+      }
+      if (from < 3) {
+        await m.addColumn(saleItems, saleItems.unitPriceCupCents);
+        await m.addColumn(saleItems, saleItems.lineTotalCupCents);
       }
     },
     beforeOpen: (details) async {
@@ -81,6 +87,16 @@ class AppDatabase extends _$AppDatabase {
     return _deviceId = id;
   }
 
+  static final _noOutboxKey = Object();
+
+  /// Ejecuta [action] sin encolar cambios para sincronizar. Se usa para los
+  /// datos de demostración, que nunca deben subirse a un servidor real.
+  ///
+  /// Usa una zona: solo afecta a lo que corre dentro de [action] (incluidas
+  /// sus transacciones), no a escrituras concurrentes de la interfaz.
+  static Future<R> withoutOutbox<R>(Future<R> Function() action) =>
+      runZoned(action, zoneValues: {_noOutboxKey: true});
+
   /// Inserta o actualiza [row] y encola el cambio para sincronizar
   /// dentro de una única transacción (patrón outbox).
   Future<void> writeSynced<T extends Table, D extends DataClass>(
@@ -89,6 +105,9 @@ class AppDatabase extends _$AppDatabase {
     required String entityId,
     SyncOp op = SyncOp.upsert,
   }) {
+    if (Zone.current[_noOutboxKey] == true) {
+      return into(table).insertOnConflictUpdate(row as Insertable<D>);
+    }
     return transaction(() async {
       await into(table).insertOnConflictUpdate(row as Insertable<D>);
       await into(syncOutbox).insert(

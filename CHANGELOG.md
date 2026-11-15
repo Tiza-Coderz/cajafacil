@@ -6,6 +6,47 @@ y versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-11-15
+
+Primera versión completa: el negocio puede vender, cobrar en USD y CUP,
+cuadrar la caja, controlar inventario y ver reportes, todo sin conexión.
+
+### Añadido
+
+- **Caja**: apertura con fondo, entradas/salidas de efectivo, resumen en
+  vivo, cierre con conteo por billetes (incluye el billete de 3 CUP) y
+  diferencia por moneda; historial de cierres.
+- **Punto de venta**: búsqueda y escaneo (cámara o lector USB), productos a
+  granel, descuentos por línea y al total, pago mixto (Efectivo USD/CUP,
+  Transferencia, Transfermóvil, EnZona), vuelto en la moneda elegida,
+  ticket en pantalla, PDF 80 mm y WhatsApp; anulación de ventas del turno.
+- **Inventario**: entradas con proveedor y costo promedio ponderado, ajustes
+  por merma, rotura, consumo, robo o conteo físico, y kardex por producto.
+- **Reportes**: ventas por rango, por día, por producto (top 10), por cajero
+  y por forma de pago, ganancia bruta y margen (solo el dueño), bajo stock;
+  exportación a PDF y CSV listo para Excel.
+- **Ajustes**: datos del negocio con logo y NIT, moneda principal, redondeo
+  de CUP, usuarios (alta, PIN, activación) y soporte por WhatsApp.
+- **Sincronización opcional con Supabase**: outbox, "último cambio gana"
+  en servidor y cliente, cursor del servidor y existencias reconstruidas
+  desde el kardex (ninguna venta se pierde entre cajas).
+- **Demo**: 2 semanas de ventas, entradas y cierres simulados, generados en
+  segundo plano tras el acceso.
+- **Entrega**: APK por arquitectura en cada release y demo web en GitHub
+  Pages.
+
+### Cambiado
+
+- Esquema de base de datos v3 (precio en CUP congelado por línea de venta).
+- Android: `minSdk` 23, AGP 8.9.1 y `compileSdk` 36.
+
+### Corregido
+
+- Tras un pago parcial en USD, lo que faltaba en CUP no completaba la venta
+  cuando los totales no eran conversión exacta.
+- Una venta en otra caja podía sobrescribir un cambio de precio al
+  sincronizar.
+
 ## [0.2.0] - 2026-11-15
 
 Catálogo de productos con precios en USD y CUP, tasa de cambio del día y
@@ -55,6 +96,7 @@ acceder por usuario con PIN.
   credenciales visibles en el acceso y botón "Restablecer demo".
 - Menú de inicio y rutas protegidas según permisos.
 
-[Unreleased]: https://github.com/Tiza-Coderz/cajafacil/compare/v0.2.0...develop
+[Unreleased]: https://github.com/Tiza-Coderz/cajafacil/compare/v1.0.0...develop
+[1.0.0]: https://github.com/Tiza-Coderz/cajafacil/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/Tiza-Coderz/cajafacil/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/Tiza-Coderz/cajafacil/releases/tag/v0.1.0

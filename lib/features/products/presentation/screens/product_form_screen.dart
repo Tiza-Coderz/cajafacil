@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:cajafacil/app/router/routes.dart';
 import 'package:cajafacil/app/theme/app_theme.dart';
 import 'package:cajafacil/core/domain/enums.dart';
 import 'package:cajafacil/core/money/currency.dart';
@@ -18,6 +19,7 @@ import 'package:cajafacil/features/products/domain/services/product_pricing.dart
 import 'package:cajafacil/features/products/presentation/providers/product_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 /// Alta y edición de productos. Si [productId] es null, crea uno nuevo.
@@ -508,6 +510,16 @@ class _ProductFormState extends ConsumerState<_ProductForm> {
                   '${Qty.format(widget.product!.stockMilli, widget.product!.unit)}. '
                   'Para cambiarla use Inventario (entradas o ajustes).',
                   style: Theme.of(context).textTheme.bodySmall,
+                ),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: () => context.push(
+                      '${Routes.inventory}/kardex/${widget.product!.id}',
+                    ),
+                    icon: const Icon(Icons.list_alt),
+                    label: const Text('Ver kardex'),
+                  ),
                 ),
                 SwitchListTile(
                   contentPadding: EdgeInsets.zero,

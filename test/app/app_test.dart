@@ -1,5 +1,13 @@
 import 'package:cajafacil/app/app.dart';
 import 'package:cajafacil/core/database/database_providers.dart';
+import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
+import 'package:cajafacil/features/cash_register/presentation/providers/cash_register_providers.dart';
+import 'package:cajafacil/features/demo/data/demo_seeder.dart';
+import 'package:cajafacil/features/demo/presentation/demo_providers.dart';
+import 'package:cajafacil/features/exchange_rate/presentation/providers/exchange_rate_providers.dart';
+import 'package:cajafacil/features/inventory/presentation/providers/inventory_providers.dart';
+import 'package:cajafacil/features/pos/presentation/providers/cart_controller.dart';
+import 'package:cajafacil/features/products/presentation/providers/product_providers.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,7 +23,22 @@ void main() {
 
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [appDatabaseProvider.overrideWithValue(db)],
+        overrides: [
+          appDatabaseProvider.overrideWithValue(db),
+          // Sin simular 2 semanas de ventas: el smoke test debe ser rápido.
+          demoSeederProvider.overrideWith(
+            (ref) => DemoSeeder(
+              db,
+              ref.watch(authRepositoryProvider),
+              ref.watch(exchangeRateRepositoryProvider),
+              ref.watch(productRepositoryProvider),
+              sales: ref.watch(saleRepositoryProvider),
+              cash: ref.watch(cashRegisterRepositoryProvider),
+              inventory: ref.watch(inventoryRepositoryProvider),
+              simulateSales: false,
+            ),
+          ),
+        ],
         child: const CajaFacilApp(),
       ),
     );

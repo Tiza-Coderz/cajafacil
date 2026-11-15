@@ -75,7 +75,7 @@ class LoginScreen extends ConsumerWidget {
       ),
     );
     if (confirmed != true) return;
-    await ref.read(demoSeederProvider).reset();
+    await ref.read(demoHistoryProvider.notifier).reset();
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Demo restablecida.')),

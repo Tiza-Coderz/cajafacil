@@ -26,6 +26,43 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Stream<List<AppUser>> watchAllUsers() {
+    final query = _db.select(_db.users)
+      ..where((u) => u.deletedAt.isNull())
+      ..orderBy([(u) => OrderingTerm.asc(u.name)]);
+    return query.watch().map(
+      (rows) =>
+          rows.map(_toEntity).toList()
+            ..sort((a, b) => a.role.index.compareTo(b.role.index)),
+    );
+  }
+
+  @override
+  Future<void> setActive(String userId, {required bool active}) async {
+    final row = await (_db.select(
+      _db.users,
+    )..where((u) => u.id.equals(userId))).getSingle();
+    if (!active && row.role == UserRole.owner) {
+      final owners =
+          await (_db.select(_db.users)..where(
+                (u) =>
+                    u.role.equalsValue(UserRole.owner) &
+                    u.active.equals(true) &
+                    u.deletedAt.isNull(),
+              ))
+              .get();
+      if (owners.length <= 1) {
+        throw const LastOwnerException();
+      }
+    }
+    await _db.writeSynced(
+      _db.users,
+      row.copyWith(active: active, updatedAt: _db.clock.now()),
+      entityId: userId,
+    );
+  }
+
+  @override
   Future<AppUser?> verifyPin(String userId, String pin) async {
     final row =
         await (_db.select(_db.users)
