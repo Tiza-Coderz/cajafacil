@@ -1,6 +1,7 @@
 import 'package:cajafacil/app/router/routes.dart';
 import 'package:cajafacil/app/theme/app_colors.dart';
 import 'package:cajafacil/app/theme/app_theme.dart';
+import 'package:cajafacil/core/money/currency.dart';
 import 'package:cajafacil/core/money/money_formatter.dart';
 import 'package:cajafacil/core/utils/qty.dart';
 import 'package:cajafacil/core/widgets/barcode_scanner_screen.dart';
@@ -13,6 +14,7 @@ import 'package:cajafacil/features/pos/presentation/widgets/pos_dialogs.dart';
 import 'package:cajafacil/features/products/domain/entities/product.dart';
 import 'package:cajafacil/features/products/domain/repositories/product_repository.dart';
 import 'package:cajafacil/features/products/presentation/providers/product_providers.dart';
+import 'package:cajafacil/features/settings/presentation/settings_providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -153,6 +155,9 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
     final categories = ref.watch(categoriesProvider).value ?? const [];
     final byId = {for (final c in categories) c.id: c};
     final pricing = ref.watch(pricingContextProvider);
+    final primaryUsd =
+        ref.watch(businessProfileProvider).value?.primaryCurrency ==
+        Currency.usd;
 
     return Column(
       children: [
@@ -221,6 +226,10 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
                       final p = list[i];
                       final category = byId[p.categoryId];
                       final cup = pricing.cupFor(p);
+                      final cupText = cup == null
+                          ? '—'
+                          : MoneyFormatter.format(cup);
+                      final usdText = MoneyFormatter.format(p.priceUsd);
                       return Card(
                         clipBehavior: Clip.antiAlias,
                         child: InkWell(
@@ -248,16 +257,16 @@ class _ProductPickerState extends ConsumerState<_ProductPicker> {
                                   ),
                                 ),
                                 Text(
-                                  cup == null
-                                      ? '—'
-                                      : MoneyFormatter.format(cup),
-                                  style: const TextStyle(
-                                    color: AppColors.cup,
+                                  primaryUsd ? usdText : cupText,
+                                  style: TextStyle(
+                                    color: primaryUsd
+                                        ? AppColors.usd
+                                        : AppColors.cup,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  '${MoneyFormatter.format(p.priceUsd)} · '
+                                  '${primaryUsd ? cupText : usdText} · '
                                   '${Qty.format(p.stockMilli, p.unit)}',
                                   style: Theme.of(context).textTheme.bodySmall
                                       ?.copyWith(
