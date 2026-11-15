@@ -1,0 +1,11 @@
+targets:
+  $default:
+    builders:
+      drift_dev:
+        options:
+          # Las consultas viven en los repositorios; el "manager API" no se usa.
+          generate_manager: false
+          sql:
+            dialect: sqlite
+            options:
+              version: "3.45"
