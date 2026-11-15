@@ -2,6 +2,7 @@ import 'package:cajafacil/core/auth/secret_hasher.dart';
 import 'package:cajafacil/core/database/app_database.dart';
 import 'package:cajafacil/core/domain/enums.dart';
 import 'package:cajafacil/features/auth/data/auth_repository_impl.dart';
+import 'package:cajafacil/features/auth/domain/repositories/auth_repository.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/test_database.dart';
@@ -77,5 +78,29 @@ void main() {
     await repo.createUser(name: 'Zoe', role: UserRole.owner, pin: '1111');
     final users = await repo.watchActiveUsers().first;
     expect(users.map((u) => u.role), [UserRole.owner, UserRole.cashier]);
+  });
+
+  test('no permite desactivar al último dueño activo', () async {
+    final owner = await repo.createUser(
+      name: 'Carlos',
+      role: UserRole.owner,
+      pin: '1234',
+    );
+    await expectLater(
+      repo.setActive(owner.id, active: false),
+      throwsA(isA<LastOwnerException>()),
+    );
+  });
+
+  test('desactivar oculta al usuario del acceso pero no de la lista', () async {
+    final cashier = await repo.createUser(
+      name: 'Ana',
+      role: UserRole.cashier,
+      pin: '1111',
+    );
+    await repo.setActive(cashier.id, active: false);
+    expect(await repo.watchActiveUsers().first, isEmpty);
+    expect((await repo.watchAllUsers().first).single.active, isFalse);
+    expect(await repo.verifyPin(cashier.id, '1111'), isNull);
   });
 }

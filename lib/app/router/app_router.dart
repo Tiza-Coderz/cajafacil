@@ -21,6 +21,7 @@ import 'package:cajafacil/features/pos/presentation/screens/session_sales_screen
 import 'package:cajafacil/features/products/presentation/screens/product_form_screen.dart';
 import 'package:cajafacil/features/products/presentation/screens/products_screen.dart';
 import 'package:cajafacil/features/reports/presentation/reports_screen.dart';
+import 'package:cajafacil/features/settings/presentation/settings_screen.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -79,6 +80,7 @@ Widget _moduleBody(AppModule module) => switch (module.route) {
   Routes.pos => const PosScreen(),
   Routes.inventory => const InventoryScreen(),
   Routes.reports => const ReportsScreen(),
+  Routes.settings => const SettingsScreen(),
   _ => PlaceholderScreen(title: module.title),
 };
 

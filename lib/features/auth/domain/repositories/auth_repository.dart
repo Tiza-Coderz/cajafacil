@@ -1,8 +1,21 @@
 import 'package:cajafacil/core/domain/enums.dart';
 import 'package:cajafacil/features/auth/domain/entities/app_user.dart';
 
+/// No se puede desactivar al último dueño activo (nadie podría administrar).
+class LastOwnerException implements Exception {
+  const LastOwnerException();
+
+  @override
+  String toString() => 'Debe quedar al menos un dueño activo.';
+}
+
 abstract interface class AuthRepository {
   Stream<List<AppUser>> watchActiveUsers();
+
+  /// Todos los usuarios (activos e inactivos), para administrarlos.
+  Stream<List<AppUser>> watchAllUsers();
+
+  Future<void> setActive(String userId, {required bool active});
 
   /// Devuelve el usuario si el PIN es correcto; `null` en caso contrario.
   Future<AppUser?> verifyPin(String userId, String pin);
