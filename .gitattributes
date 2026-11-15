@@ -1,0 +1,9 @@
+# Normalizar fin de línea en todo el repo (equipo Windows + CI Linux)
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.jpg binary
+*.webp binary
+*.wasm binary
+*.jar binary
+*.ttf binary
