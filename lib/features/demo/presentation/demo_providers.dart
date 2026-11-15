@@ -2,6 +2,8 @@ import 'package:cajafacil/core/config/env.dart';
 import 'package:cajafacil/core/database/database_providers.dart';
 import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
 import 'package:cajafacil/features/demo/data/demo_seeder.dart';
+import 'package:cajafacil/features/exchange_rate/presentation/providers/exchange_rate_providers.dart';
+import 'package:cajafacil/features/products/presentation/providers/product_providers.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'demo_providers.g.dart';
@@ -10,6 +12,8 @@ part 'demo_providers.g.dart';
 DemoSeeder demoSeeder(Ref ref) => DemoSeeder(
   ref.watch(appDatabaseProvider),
   ref.watch(authRepositoryProvider),
+  ref.watch(exchangeRateRepositoryProvider),
+  ref.watch(productRepositoryProvider),
 );
 
 /// Inicialización de la app: abre la BD y siembra la demo si hace falta.

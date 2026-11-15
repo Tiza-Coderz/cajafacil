@@ -65,4 +65,5 @@ jobs:
           cache: true
       - run: flutter pub get
       - run: dart run build_runner build --delete-conflicting-outputs
-      - run: flutter build web --release --dart-define=DEMO_MODE=true
+      # Sin CDN de Google: CanvasKit se sirve desde el mismo sitio (Cuba).
+      - run: flutter build web --release --no-web-resources-cdn --dart-define=DEMO_MODE=true

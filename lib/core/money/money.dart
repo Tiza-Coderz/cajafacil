@@ -25,7 +25,7 @@ class Money implements Comparable<Money> {
   static Money? tryParse(String input, Currency currency) {
     final cleaned = input
         .trim()
-        .replaceAll(RegExp(r'[\s ]'), '')
+        .replaceAll(RegExp('[\\s\u00A0\u202F]'), '')
         .replaceAll(',', '.');
     final match = RegExp(r'^(-?)(\d+)(?:\.(\d{1,2}))?$').firstMatch(cleaned);
     if (match == null) return null;

@@ -48,12 +48,20 @@ class AppDatabase extends _$AppDatabase {
   static const _deviceIdKey = 'device_id';
   String? _deviceId;
 
+  /// Historial de esquema:
+  /// - v1 (0.1.0): esquema inicial.
+  /// - v2: `products.photo_data` para fotos en Web.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
     onCreate: (m) => m.createAll(),
+    onUpgrade: (m, from, to) async {
+      if (from < 2) {
+        await m.addColumn(products, products.photoData);
+      }
+    },
     beforeOpen: (details) async {
       await customStatement('PRAGMA foreign_keys = ON');
     },
