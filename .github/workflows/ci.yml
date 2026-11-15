@@ -27,6 +27,9 @@ jobs:
           channel: stable
           cache: true
 
+      - name: SQLite para tests de Drift
+        run: sudo apt-get update -q && sudo apt-get install -y -q libsqlite3-dev
+
       - name: Dependencias
         run: flutter pub get
 
