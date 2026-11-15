@@ -1,0 +1,68 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  FLUTTER_VERSION: "3.32.7"
+
+jobs:
+  analyze-test:
+    name: Lint + tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: SQLite para tests de Drift
+        run: sudo apt-get update -q && sudo apt-get install -y -q libsqlite3-dev
+
+      - name: Dependencias
+        run: flutter pub get
+
+      - name: Generar código (freezed, drift, riverpod)
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Formato
+        run: dart format --output=none --set-exit-if-changed lib test
+
+      - name: Análisis estático
+        run: flutter analyze --fatal-infos
+
+      - name: Tests
+        run: flutter test --coverage
+
+      - name: Subir cobertura
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: coverage/lcov.info
+
+  build-web:
+    name: Build web
+    needs: analyze-test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: dart run build_runner build --delete-conflicting-outputs
+      - run: flutter build web --release --dart-define=DEMO_MODE=true
