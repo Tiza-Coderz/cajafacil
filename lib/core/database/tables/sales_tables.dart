@@ -91,6 +91,11 @@ class SaleItems extends Table with SyncColumns {
   IntColumn get discountUsdCents => integer().withDefault(const Constant(0))();
   IntColumn get lineTotalUsdCents => integer()();
 
+  /// Precio y total en CUP congelados (v3). Necesarios para productos con
+  /// precio fijo en CUP y para reimprimir el ticket tal como se cobró.
+  IntColumn get unitPriceCupCents => integer().withDefault(const Constant(0))();
+  IntColumn get lineTotalCupCents => integer().withDefault(const Constant(0))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

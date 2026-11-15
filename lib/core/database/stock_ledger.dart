@@ -24,12 +24,13 @@ class StockLedger {
     AdjustmentReason? reason,
     String? refId,
     String? note,
+    DateTime? at,
   }) {
     return _db.transaction(() async {
       final product = await (_db.select(
         _db.products,
       )..where((p) => p.id.equals(productId))).getSingle();
-      final now = _db.clock.now();
+      final now = at ?? _db.clock.now();
       final deviceId = await _db.deviceId();
       final balance = product.stockMilli + qtyDeltaMilli;
 
