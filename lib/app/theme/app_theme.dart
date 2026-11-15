@@ -26,6 +26,7 @@ abstract final class AppTheme {
 
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'Roboto',
       colorScheme: scheme,
       visualDensity: VisualDensity.standard,
       appBarTheme: AppBarTheme(

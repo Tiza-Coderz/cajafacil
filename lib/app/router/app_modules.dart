@@ -52,7 +52,7 @@ const appModules = [
   AppModule(
     route: Routes.exchangeRate,
     title: 'Tasa de cambio',
-    description: 'USD → CUP del día',
+    description: 'Dólar a CUP del día',
     icon: Icons.currency_exchange,
     permission: Permission.setExchangeRate,
   ),

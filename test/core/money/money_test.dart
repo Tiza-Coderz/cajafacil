@@ -118,7 +118,7 @@ void main() {
     });
 
     test('CUP sin centavos cuando son enteros y con miles', () {
-      expect(MoneyFormatter.format(const Money.cup(125000)), '1 250 CUP');
+      expect(MoneyFormatter.format(const Money.cup(125000)), '1\u00A0250 CUP');
     });
 
     test('negativos', () {
