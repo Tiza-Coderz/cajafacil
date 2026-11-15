@@ -16,6 +16,7 @@ import 'package:cajafacil/features/auth/presentation/providers/auth_providers.da
 import 'package:cajafacil/features/demo/presentation/demo_providers.dart';
 import 'package:cajafacil/features/settings/domain/business_profile.dart';
 import 'package:cajafacil/features/settings/presentation/settings_providers.dart';
+import 'package:cajafacil/features/settings/presentation/sync_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -41,6 +42,8 @@ class SettingsScreen extends ConsumerWidget {
                 _BusinessForm(profile: p),
                 const SizedBox(height: Gaps.lg),
                 const _UsersSection(),
+                const SizedBox(height: Gaps.lg),
+                const SyncSection(),
                 const SizedBox(height: Gaps.lg),
                 const _SupportSection(),
               ],
