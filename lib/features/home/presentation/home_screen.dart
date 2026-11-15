@@ -1,6 +1,7 @@
 import 'package:cajafacil/app/router/app_modules.dart';
 import 'package:cajafacil/app/theme/app_theme.dart';
 import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
+import 'package:cajafacil/features/demo/presentation/demo_history_gate.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,22 +38,38 @@ class HomeScreen extends ConsumerWidget {
           ),
         ],
       ),
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          final columns = (constraints.maxWidth / 220).floor().clamp(2, 4);
-          return GridView.builder(
-            padding: const EdgeInsets.all(Gaps.md),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: columns,
-              mainAxisSpacing: Gaps.md,
-              crossAxisSpacing: Gaps.md,
-              childAspectRatio: 1.1,
-            ),
-            itemCount: modules.length,
-            itemBuilder: (context, i) => _ModuleCard(module: modules[i]),
-          );
-        },
+      body: Column(
+        children: [
+          const DemoHistoryBanner(),
+          Expanded(child: _ModulesGrid(modules: modules)),
+        ],
       ),
+    );
+  }
+}
+
+class _ModulesGrid extends StatelessWidget {
+  const _ModulesGrid({required this.modules});
+
+  final List<AppModule> modules;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = (constraints.maxWidth / 220).floor().clamp(2, 4);
+        return GridView.builder(
+          padding: const EdgeInsets.all(Gaps.md),
+          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            mainAxisSpacing: Gaps.md,
+            crossAxisSpacing: Gaps.md,
+            childAspectRatio: 1.1,
+          ),
+          itemCount: modules.length,
+          itemBuilder: (context, i) => _ModuleCard(module: modules[i]),
+        );
+      },
     );
   }
 }
