@@ -51,8 +51,9 @@ class AppDatabase extends _$AppDatabase {
   /// Historial de esquema:
   /// - v1 (0.1.0): esquema inicial.
   /// - v2: `products.photo_data` para fotos en Web.
+  /// - v3: precios en CUP congelados por línea de venta.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,6 +61,10 @@ class AppDatabase extends _$AppDatabase {
     onUpgrade: (m, from, to) async {
       if (from < 2) {
         await m.addColumn(products, products.photoData);
+      }
+      if (from < 3) {
+        await m.addColumn(saleItems, saleItems.unitPriceCupCents);
+        await m.addColumn(saleItems, saleItems.lineTotalCupCents);
       }
     },
     beforeOpen: (details) async {
