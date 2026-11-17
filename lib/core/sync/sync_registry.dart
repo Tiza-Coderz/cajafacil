@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cajafacil/core/database/app_database.dart';
 import 'package:cajafacil/core/sync/remote_sync_api.dart';
 import 'package:drift/drift.dart';
@@ -38,7 +40,30 @@ class SyncEntity<D extends DataClass> {
     await _upsert(db, fromJson(record.payload));
     return true;
   }
+
+  /// Todas las filas locales de esta entidad como registros para subir.
+  /// El payload pasa por JSON igual que en el outbox.
+  Future<List<RemoteRecord>> snapshot(AppDatabase db) async {
+    final rows = await db.select(table).get();
+    return [
+      for (final row in rows)
+        RemoteRecord(
+          entity: name,
+          id: row.toJson()['id']! as String,
+          payload: (jsonDecode(jsonEncode(row.toJson())) as Map)
+              .cast<String, Object?>(),
+          updatedAtMs: updatedAt(row).millisecondsSinceEpoch,
+          deviceId: deviceId(row),
+        ),
+    ];
+  }
 }
+
+/// Foto completa de la BD local, en orden de dependencias, para cargarla
+/// de una vez en la nube (ver `tool/seed_supabase.dart`).
+Future<List<RemoteRecord>> snapshotAll(AppDatabase db) async => [
+  for (final entity in syncEntities(db)) ...await entity.snapshot(db),
+];
 
 /// Entidades en orden de dependencias (las referenciadas primero), para que
 /// las claves foráneas se cumplan al aplicar lo descargado.
