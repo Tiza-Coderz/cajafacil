@@ -4,6 +4,7 @@ import 'package:cajafacil/core/config/env.dart';
 import 'package:cajafacil/core/sync/remote_sync_api.dart';
 import 'package:cajafacil/core/sync/sync_controller.dart';
 import 'package:cajafacil/core/utils/date_formatter.dart';
+import 'package:cajafacil/features/settings/presentation/cloud_link_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -12,66 +13,25 @@ class SyncSection extends ConsumerWidget {
   const SyncSection({super.key});
 
   Future<void> _link(BuildContext context, WidgetRef ref) async {
-    final email = TextEditingController();
-    final password = TextEditingController();
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Vincular con la nube'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text(
-              'Use la cuenta del dueño. Todos los equipos vinculados a la '
-              'misma cuenta comparten ventas, productos e inventario.',
+    final credentials = await showCloudLinkDialog(context);
+    if (credentials == null) return;
+    try {
+      await ref
+          .read(syncControllerProvider.notifier)
+          .link(email: credentials.email, password: credentials.password);
+    } on Object catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e is SyncAuthException || e is SyncNetworkException
+                  ? e.toString()
+                  : 'No se pudo vincular.',
             ),
-            const SizedBox(height: Gaps.md),
-            TextField(
-              controller: email,
-              keyboardType: TextInputType.emailAddress,
-              decoration: const InputDecoration(labelText: 'Correo'),
-            ),
-            const SizedBox(height: Gaps.md),
-            TextField(
-              controller: password,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Contraseña'),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: const Text('Cancelar'),
           ),
-          FilledButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: const Text('Vincular'),
-          ),
-        ],
-      ),
-    );
-    if (ok ?? false) {
-      try {
-        await ref
-            .read(syncControllerProvider.notifier)
-            .link(email: email.text, password: password.text);
-      } on Object catch (e) {
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                e is SyncAuthException || e is SyncNetworkException
-                    ? e.toString()
-                    : 'No se pudo vincular.',
-              ),
-            ),
-          );
-        }
+        );
       }
     }
-    email.dispose();
-    password.dispose();
   }
 
   @override

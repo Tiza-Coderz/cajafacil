@@ -80,6 +80,14 @@ class SupabaseSyncApi implements RemoteSyncApi {
         )
         .timeout(_timeout);
     if (res.statusCode == 400 || res.statusCode == 401) {
+      // GoTrue responde 400 también si la cuenta no está confirmada.
+      if (res.body.contains('email_not_confirmed') ||
+          res.body.contains('Email not confirmed')) {
+        throw const SyncAuthException(
+          'La cuenta no está confirmada. En Supabase > Authentication > '
+          'Users, confirme el correo del dueño.',
+        );
+      }
       throw const SyncAuthException('Correo o contraseña incorrectos.');
     }
     if (res.statusCode >= 300) {

@@ -6,6 +6,7 @@ import 'package:cajafacil/core/widgets/state_views.dart';
 import 'package:cajafacil/features/auth/domain/entities/app_user.dart';
 import 'package:cajafacil/features/auth/presentation/providers/auth_providers.dart';
 import 'package:cajafacil/features/auth/presentation/widgets/demo_credentials_card.dart';
+import 'package:cajafacil/features/auth/presentation/widgets/first_run_setup.dart';
 import 'package:cajafacil/features/auth/presentation/widgets/login_feedback.dart';
 import 'package:cajafacil/features/auth/presentation/widgets/password_login_dialog.dart';
 import 'package:cajafacil/features/auth/presentation/widgets/user_tile.dart';
@@ -118,8 +119,10 @@ class LoginScreen extends ConsumerWidget {
                     style: text.bodyMedium,
                   ),
                   const SizedBox(height: Gaps.lg),
-                  Text('¿Quién va a trabajar?', style: text.titleMedium),
-                  const SizedBox(height: Gaps.sm),
+                  if (users.value?.isNotEmpty ?? false) ...[
+                    Text('¿Quién va a trabajar?', style: text.titleMedium),
+                    const SizedBox(height: Gaps.sm),
+                  ],
                   users.when(
                     loading: () => const Padding(
                       padding: EdgeInsets.all(Gaps.lg),
@@ -129,11 +132,9 @@ class LoginScreen extends ConsumerWidget {
                       message: 'No se pudieron cargar los usuarios.',
                       onRetry: () => ref.invalidate(activeUsersProvider),
                     ),
+                    // Sin usuarios: equipo nuevo en un despliegue real.
                     data: (list) => list.isEmpty
-                        ? const EmptyView(
-                            message: 'No hay usuarios registrados.',
-                            icon: Icons.person_off_outlined,
-                          )
+                        ? const FirstRunSetup()
                         : Column(
                             children: [
                               for (final user in list)
@@ -149,14 +150,15 @@ class LoginScreen extends ConsumerWidget {
                             ],
                           ),
                   ),
-                  TextButton.icon(
-                    onPressed: () => showDialog<void>(
-                      context: context,
-                      builder: (_) => const PasswordLoginDialog(),
+                  if (users.value?.isNotEmpty ?? false)
+                    TextButton.icon(
+                      onPressed: () => showDialog<void>(
+                        context: context,
+                        builder: (_) => const PasswordLoginDialog(),
+                      ),
+                      icon: const Icon(Icons.alternate_email),
+                      label: const Text('Entrar con correo y contraseña'),
                     ),
-                    icon: const Icon(Icons.alternate_email),
-                    label: const Text('Entrar con correo y contraseña'),
-                  ),
                   if (Env.demoMode) ...[
                     const SizedBox(height: Gaps.md),
                     DemoCredentialsCard(

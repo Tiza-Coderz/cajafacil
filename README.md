@@ -142,6 +142,12 @@ flutter test                                           # tests
 | App Android | **GitHub Releases** | Automático al crear un tag `vX.Y.Z` (`release-android.yml`). Se publican APK por arquitectura (~3× más livianos). |
 | Sincronización | **Supabase** (plan gratuito) | 1) Crear proyecto. 2) Ejecutar `supabase/migrations/0001_sync_records.sql`. 3) Crear el usuario del dueño en *Authentication*. 4) Compilar con `SYNC_ENABLED=true`, `SUPABASE_URL` y `SUPABASE_ANON_KEY`. |
 
+**Para un negocio real** (sin modo demo, con su propia nube y datos de
+prueba opcionales) use el workflow manual **Build cliente** y siga
+[`docs/despliegue-cliente.md`](docs/despliegue-cliente.md). En un equipo
+nuevo la app muestra **Configurar este equipo**: crear el negocio desde
+cero o vincularse a la nube y descargarlo.
+
 Firma de Android para producción: cree un keystore y configure los secrets
 `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`
 y `ANDROID_KEY_PASSWORD` (sin ellos se firma con la clave de depuración,

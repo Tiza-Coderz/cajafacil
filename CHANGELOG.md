@@ -6,6 +6,23 @@ y versionado [SemVer](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Añadido
+
+- **Primer uso sin modo demo**: pantalla *Configurar este equipo* para crear
+  el negocio y el dueño, o vincularse a la nube y descargar los datos.
+- **Build cliente** (`build-client.yml`): workflow manual que compila APK
+  firmado y web sin modo demo, con los secrets de Supabase de cada cliente
+  (un *Environment* de GitHub por cliente).
+- `tool/seed_supabase.dart`: carga el negocio de ejemplo en el proyecto de
+  Supabase del cliente para probar la sincronización real.
+- Guía `docs/despliegue-cliente.md` y plantillas `.env.client.example` y
+  `.env.seed.example`.
+
+### Corregido
+
+- Una instalación con `DEMO_MODE=false` quedaba sin usuarios y sin forma de
+  entrar.
+
 ## [1.0.1] - 2026-11-15
 
 ### Rendimiento

@@ -48,6 +48,8 @@ app.*.map.json
 .env
 .env.*
 !.env.example
+!.env.client.example
+!.env.seed.example
 
 # Coverage
 coverage/
