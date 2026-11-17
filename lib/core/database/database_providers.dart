@@ -1,4 +1,5 @@
 import 'package:cajafacil/core/database/app_database.dart';
+import 'package:cajafacil/core/database/connection.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'database_providers.g.dart';
@@ -7,7 +8,7 @@ part 'database_providers.g.dart';
 /// En tests se sobreescribe con una BD en memoria.
 @Riverpod(keepAlive: true)
 AppDatabase appDatabase(Ref ref) {
-  final db = AppDatabase.open();
+  final db = AppDatabase(openConnection());
   ref.onDispose(db.close);
   return db;
 }

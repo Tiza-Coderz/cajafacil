@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:cajafacil/core/database/connection.dart';
 import 'package:cajafacil/core/database/converters.dart';
 import 'package:cajafacil/core/database/tables/business_tables.dart';
 import 'package:cajafacil/core/database/tables/catalog_tables.dart';
@@ -40,8 +39,6 @@ class AppDatabase extends _$AppDatabase {
     this.clock = const Clock(),
     this.ids = const IdGenerator(),
   });
-
-  factory AppDatabase.open() => AppDatabase(openConnection());
 
   final Clock clock;
   final IdGenerator ids;
